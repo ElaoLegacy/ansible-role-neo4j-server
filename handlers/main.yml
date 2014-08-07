@@ -1,0 +1,7 @@
+---
+
+- name: neo4j server restart
+  service: >
+    name=neo4j-service
+    state=restarted
+  sudo: yes

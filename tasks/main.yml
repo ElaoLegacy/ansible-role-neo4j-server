@@ -1,0 +1,41 @@
+---
+
+- name: repositories key
+  apt_key: >
+    url=http://debian.neo4j.org/neotechnology.gpg.key
+    state=present
+  sudo: yes
+
+- name: repositories
+  apt_repository: >
+    repo="{{ item }}"
+    state=present
+    update_cache=yes
+  with_items:
+    - deb http://debian.neo4j.org/repo stable/
+  sudo: yes
+
+- name: packages
+  apt: >
+    pkg={{ item }}
+    state=present
+  with_items:
+    - neo4j
+  sudo: yes
+
+- name: service
+  service: >
+    name=neo4j-service
+    state=started
+    enabled=yes
+  sudo: yes
+
+- name: config webserver address
+  lineinfile: >
+    dest=/etc/neo4j/neo4j-server.properties
+    line="org.neo4j.server.webserver.address=0.0.0.0"
+    regexp='^#org\.neo4j\.server\.webserver\.address='
+    backrefs=yes
+  notify:
+    - neo4j server restart
+  sudo: yes
